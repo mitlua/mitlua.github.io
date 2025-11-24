@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Announcement Controller</title>
+    <style>
+        body { font-family: sans-serif; background-color: #1e1e1e; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background-color: #2d2d2d; padding: 2rem; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 400px; }
+        input, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: none; background: #3d3d3d; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: #00b06f; color: white; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #00915b; }
+        label { display: block; margin-bottom: 5px; font-size: 0.9em; color: #ccc; }
+        .status { margin-top: 10px; text-align: center; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align:center;">Game Announcements</h2>
+    
+    <label>Admin Key</label>
+    <input type="password" id="adminKey" placeholder="Enter secure key">
+
+    <label>Author Name</label>
+    <input type="text" id="author" placeholder="e.g. Developer123">
+
+    <label>Announcement Message</label>
+    <textarea id="message" rows="4" placeholder="Type your global message here..."></textarea>
+
+    <button onclick="sendAnnouncement()">Broadcast to Roblox</button>
+    <div class="status" id="statusText"></div>
+</div>
+
+<script>
+    async function sendAnnouncement() {
+        const key = document.getElementById('adminKey').value;
+        const author = document.getElementById('author').value;
+        const message = document.getElementById('message').value;
+        const status = document.getElementById('statusText');
+
+        // SECURITY WARNING: The key check happens on the SERVER, not here.
+        // If you check the key here, hackers will see it.
+        
+        // Replace this URL with your actual backend/database URL
+        const API_URL = "https://api.your-backend-service.com/update-announcement";
+
+        status.innerText = "Sending...";
+        status.style.color = "yellow";
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'secret-key': key // We send the key to the server to be verified
+                },
+                body: JSON.stringify({
+                    author: author,
+                    message: message,
+                    timestamp: Date.now()
+                })
+            });
+
+            if (response.ok) {
+                status.innerText = "Success! Announcement updated.";
+                status.style.color = "#00b06f";
+            } else {
+                status.innerText = "Failed: Incorrect Key or Server Error.";
+                status.style.color = "red";
+            }
+        } catch (error) {
+            status.innerText = "Connection Error.";
+            status.style.color = "red";
+            console.error(error);
+        }
+    }
+</script>
+
+</body>
+</html>
