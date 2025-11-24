@@ -39,34 +39,32 @@
         const message = document.getElementById('message').value;
         const status = document.getElementById('statusText');
 
-        // SECURITY WARNING: The key check happens on the SERVER, not here.
-        // If you check the key here, hackers will see it.
-        
-        // Replace this URL with your actual backend/database URL
-        const API_URL = "https://api.your-backend-service.com/update-announcement";
+        // PASTE YOUR BIN ID BELOW (Keep the quotes)
+        const BIN_ID = "6924606e43b1c97be9c210ad"; 
+        const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
         status.innerText = "Sending...";
         status.style.color = "yellow";
 
         try {
             const response = await fetch(API_URL, {
-                method: 'POST',
+                method: 'PUT', // Jsonbin uses PUT to update data
                 headers: {
                     'Content-Type': 'application/json',
-                    'secret-key': key // We send the key to the server to be verified
+                    'X-Master-Key': key // The key you type verifies you own the bin
                 },
                 body: JSON.stringify({
                     author: author,
                     message: message,
-                    timestamp: Date.now()
+                    timestamp: Date.now() // Adds time so Roblox knows it's new
                 })
             });
 
             if (response.ok) {
-                status.innerText = "Success! Announcement updated.";
+                status.innerText = "Success! Announcement sent to database.";
                 status.style.color = "#00b06f";
             } else {
-                status.innerText = "Failed: Incorrect Key or Server Error.";
+                status.innerText = "Error: Check your Key or Bin ID.";
                 status.style.color = "red";
             }
         } catch (error) {
